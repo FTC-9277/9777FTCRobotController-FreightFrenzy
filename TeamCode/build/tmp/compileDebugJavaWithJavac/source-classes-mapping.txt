@@ -1,0 +1,72 @@
+org/firstinspires/ftc/teamcode/teleops/DriveVelocityCalibration.java
+ org.firstinspires.ftc.teamcode.teleops.DriveVelocityCalibration
+org/firstinspires/ftc/teamcode/ExplosivesUtils/PIDController.java
+ org.firstinspires.ftc.teamcode.ExplosivesUtils.PIDController
+org/firstinspires/ftc/teamcode/vision/Color.java
+ org.firstinspires.ftc.teamcode.vision.Color
+org/firstinspires/ftc/teamcode/autos/PSAuto2.java
+ org.firstinspires.ftc.teamcode.autos.PSAuto2
+org/firstinspires/ftc/teamcode/teleops/StrafeTestTele.java
+ org.firstinspires.ftc.teamcode.teleops.StrafeTestTele
+org/firstinspires/ftc/teamcode/vision/ClusterSort/ClusterDataset.java
+ org.firstinspires.ftc.teamcode.vision.ClusterSort.ClusterDataset
+org/firstinspires/ftc/teamcode/teleops/NullTele.java
+ org.firstinspires.ftc.teamcode.teleops.NullTele
+org/firstinspires/ftc/teamcode/autos/NullAuto.java
+ org.firstinspires.ftc.teamcode.autos.NullAuto
+org/firstinspires/ftc/teamcode/ExplosivesUtils/Robot.java
+ org.firstinspires.ftc.teamcode.ExplosivesUtils.Robot
+ org.firstinspires.ftc.teamcode.ExplosivesUtils.Robot$1
+ org.firstinspires.ftc.teamcode.ExplosivesUtils.Robot$Direction
+ org.firstinspires.ftc.teamcode.ExplosivesUtils.Robot$PowerShotPos
+ org.firstinspires.ftc.teamcode.ExplosivesUtils.Robot$ShooterSpeed
+org/firstinspires/ftc/teamcode/teleops/ServoProgramming.java
+ org.firstinspires.ftc.teamcode.teleops.ServoProgramming
+org/firstinspires/ftc/teamcode/ExplosivesUtils/ExplosiveAuto.java
+ org.firstinspires.ftc.teamcode.ExplosivesUtils.ExplosiveAuto
+org/firstinspires/ftc/teamcode/autos/NewAuto.java
+ org.firstinspires.ftc.teamcode.autos.NewAuto
+org/firstinspires/ftc/teamcode/vision/Camera.java
+ org.firstinspires.ftc.teamcode.vision.Camera
+org/firstinspires/ftc/teamcode/autos/PowerShotAuto.java
+ org.firstinspires.ftc.teamcode.autos.PowerShotAuto
+org/firstinspires/ftc/teamcode/teleops/PowerShotTest.java
+ org.firstinspires.ftc.teamcode.teleops.PowerShotTest
+org/firstinspires/ftc/teamcode/teleops/TestTele.java
+ org.firstinspires.ftc.teamcode.teleops.TestTele
+org/firstinspires/ftc/teamcode/ExplosivesUtils/SensorData.java
+ org.firstinspires.ftc.teamcode.ExplosivesUtils.SensorData
+org/firstinspires/ftc/teamcode/vision/Sampler.java
+ org.firstinspires.ftc.teamcode.vision.Sampler
+org/firstinspires/ftc/teamcode/autos/ShootAuto.java
+ org.firstinspires.ftc.teamcode.autos.ShootAuto
+org/firstinspires/ftc/teamcode/vision/ClusterSort/ClusterSort.java
+ org.firstinspires.ftc.teamcode.vision.ClusterSort.ClusterSort
+org/firstinspires/ftc/teamcode/autos/ParkAuto.java
+ org.firstinspires.ftc.teamcode.autos.ParkAuto
+org/firstinspires/ftc/teamcode/autos/TowerWobbler.java
+ org.firstinspires.ftc.teamcode.autos.TowerWobbler
+org/firstinspires/ftc/teamcode/teleops/Autoturn.java
+ org.firstinspires.ftc.teamcode.teleops.Autoturn
+org/firstinspires/ftc/teamcode/autos/VisionAuto.java
+ org.firstinspires.ftc.teamcode.autos.VisionAuto
+org/firstinspires/ftc/teamcode/autos/TestAuto.java
+ org.firstinspires.ftc.teamcode.autos.TestAuto
+org/firstinspires/ftc/teamcode/teleops/FullTele.java
+ org.firstinspires.ftc.teamcode.teleops.FullTele
+org/firstinspires/ftc/teamcode/autos/MotorTestAuto.java
+ org.firstinspires.ftc.teamcode.autos.MotorTestAuto
+org/firstinspires/ftc/teamcode/teleops/FOCTele.java
+ org.firstinspires.ftc.teamcode.teleops.FOCTele
+org/firstinspires/ftc/teamcode/vision/ClusterSort/Coordinate.java
+ org.firstinspires.ftc.teamcode.vision.ClusterSort.Coordinate
+org/firstinspires/ftc/teamcode/autos/DoubleWobbler.java
+ org.firstinspires.ftc.teamcode.autos.DoubleWobbler
+org/firstinspires/ftc/teamcode/teleops/SensorAnalytics.java
+ org.firstinspires.ftc.teamcode.teleops.SensorAnalytics
+org/firstinspires/ftc/teamcode/vision/ClusterSort/Scale.java
+ org.firstinspires.ftc.teamcode.vision.ClusterSort.Scale
+org/firstinspires/ftc/teamcode/BuildConfig.java
+ org.firstinspires.ftc.teamcode.BuildConfig
+org/firstinspires/ftc/teamcode/ExplosivesUtils/ExplosiveTele.java
+ org.firstinspires.ftc.teamcode.ExplosivesUtils.ExplosiveTele
