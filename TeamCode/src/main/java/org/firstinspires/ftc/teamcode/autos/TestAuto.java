@@ -4,9 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.ExplosivesUtils.ExplosiveAuto;
 
-@Autonomous(name = "Test Auto")
+@Autonomous(name = "TestAuto")
 public class TestAuto extends ExplosiveAuto {
-
     @Override
     protected void initialize() {
 
@@ -14,8 +13,7 @@ public class TestAuto extends ExplosiveAuto {
 
     @Override
     protected void begin() throws InterruptedException {
-
-        robot.throttleDrive(1.0,1750);
-
+        robot.drive(0.5);
+        waitMillis(1000000);
     }
 }
