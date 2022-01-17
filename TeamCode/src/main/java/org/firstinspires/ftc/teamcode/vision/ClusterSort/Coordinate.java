@@ -9,8 +9,14 @@ public class Coordinate {
     public double x() {
         return x;
     }
+    public double getX() {
+        return x;
+    }
 
     public double y() {
+        return y;
+    }
+    public double getY() {
         return y;
     }
 
@@ -70,5 +76,9 @@ public class Coordinate {
     private static double round(double value, int places) {
         double scale = Math.pow(10, places);
         return Math.round(value * scale) / scale;
+    }
+
+    public Coordinate addedTo(Coordinate c) {
+        return new Coordinate(this.getX()+c.getX(),this.getY()+c.getY());
     }
 }

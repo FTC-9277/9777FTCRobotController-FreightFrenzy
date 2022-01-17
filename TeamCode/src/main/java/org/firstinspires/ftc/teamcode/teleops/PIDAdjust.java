@@ -19,6 +19,8 @@ public class PIDAdjust extends ExplosiveTele {
 
     public double P = 10.0;
 
+    public Boolean locked2=false;
+
     @Override
     protected void looping() {
 
@@ -36,13 +38,23 @@ public class PIDAdjust extends ExplosiveTele {
             locked=false;
         }
 
-        if(Math.abs(gamepad1.left_stick_y) > 0.2) {
-            robot.drive(gamepad1.left_stick_y*DAMPING);
-        } else if(Math.abs(gamepad1.right_stick_x) > 0.2) {
-            robot.turn(-gamepad1.right_stick_x*DAMPING);
-        } else {
+        if(gamepad1.b) {
+            robot.drive(1);
+            locked2=false;
+        } else if (!locked2) {
+            locked2=true;
+            robot.drive(-1);
+            waitMillis(100);
             robot.drive(0);
         }
+
+//        if(Math.abs(gamepad1.left_stick_y) > 0.2) {
+//            robot.drive(gamepad1.left_stick_y*DAMPING);
+//        } else if(Math.abs(gamepad1.right_stick_x) > 0.2) {
+//            robot.turn(-gamepad1.right_stick_x*DAMPING);
+//        } else {
+//            robot.drive(0);
+//        }
 
 
     }

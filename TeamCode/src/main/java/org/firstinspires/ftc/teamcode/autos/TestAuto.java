@@ -13,7 +13,16 @@ public class TestAuto extends ExplosiveAuto {
 
     @Override
     protected void begin() throws InterruptedException {
-        robot.drive(0.5);
-        waitMillis(1000000);
+        robot.driveEncoders(500,0.35);
+
+        robot.driveToPosition(60,30,0.35);
+
+//        robot.autoturn(90,3);
+
+//        robot.driveEncoders(500,0.1);
+//
+//        robot.autoturn(-90,3);
+//
+//        robot.driveEncoders(1000,0.1);
     }
 }

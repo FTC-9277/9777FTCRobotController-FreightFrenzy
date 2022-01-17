@@ -34,7 +34,6 @@ public class Camera {
             this.parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         } else {
             this.parameters = new VuforiaLocalizer.Parameters();
-
         }
 
         //HAZMAT KEY

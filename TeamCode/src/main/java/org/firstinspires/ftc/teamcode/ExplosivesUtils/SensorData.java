@@ -6,16 +6,21 @@ public class SensorData {
         return label;
     }
 
-    public double getData() {
+    public String getData() {
         return data;
     }
 
     private String label;
-    private double data;
+    private String data;
+
+    public SensorData(String label, String data) {
+        this.label=label;
+        this.data=data;
+    }
 
     public SensorData(String label, double data) {
         this.label=label;
-        this.data=data;
+        this.data=Double.toString(data);
     }
 
 }
