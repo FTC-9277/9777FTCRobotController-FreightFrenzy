@@ -17,6 +17,7 @@ public abstract class ExplosiveAuto extends LinearOpMode {
         createRobot();
         log("Initializing...");
         initialize();
+        robot.prepareForAuto();
         log("-- Awaiting start --");
         waitForStart();
         log("Starting...");
@@ -73,6 +74,40 @@ public abstract class ExplosiveAuto extends LinearOpMode {
         telemetry.update();
         while(opModeIsActive()) {
             // Wait here
+        }
+    }
+
+
+    // Custom movement
+
+    public void driveAndArm(int driveTicks, double driveSpeed, Arm.GOAL goal) {
+        boolean keepDriving = true;
+        boolean keepArming = true;
+
+        long startTime = System.currentTimeMillis();
+
+        double initialL = robot.leftEncoder();
+        double initialR = robot.rightEncoder();
+        double initialHeading = robot.getHeading();
+
+        while(keepArming||keepDriving && System.currentTimeMillis()-startTime<5000) {
+            if(keepDriving) {
+                keepDriving = robot.driveEncodersLoop(driveTicks, (int) initialL, (int) initialR, initialHeading, startTime, driveSpeed);
+            }
+
+            if(keepArming) {
+                switch (goal) {
+                    case HIGH: robot.arm.aimToHigh();
+                    case MID: robot.arm.aimToMid();
+                    case LOW: robot.arm.aimToLow();
+                }
+            }
+
+            switch(goal) {
+                case HIGH: keepArming = robot.arm.isArmCloseToEnc(robot.arm.HIGH_GOAL_ENC);
+                case MID: keepArming = robot.arm.isArmCloseToEnc(robot.arm.MID_GOAL_ENC);
+                case LOW: keepArming = robot.arm.isArmCloseToEnc(robot.arm.LOW_GOAL_ENC);
+            }
         }
     }
 

@@ -96,39 +96,58 @@ public class Arm {
         setJoint0Speed(0);
     }
 
-//    public int MAX_VELOCITY =3000;
-//
-//    public void PIDLoop(DcMotorEx motor, double target) {
-//        double current = motor.getCurrentPosition();
-//
-//        int sign=1;
-//        if(target<current) {
-//            sign=-1;
-//        }
-//
-//        double diff = Math.abs(target-current);
-//
-//        double velocity = diff/1000;
-//
-//        if(velocity>1) {
-//            velocity=1;
-//        } else if (velocity<-1) {
-//            velocity=-1;
-//        }
-//
-//        if(velocity==0) {
-//            velocity=0.001;
-//        }
-//
-//        motor.setVelocity(sign*MAX_VELOCITY*velocity);
-//
-////        opMode.telemetry.addLine("Actual Velocity: " + motor.getVelocity());
-////        opMode.telemetry.addLine("Velocity: " + velocity);
-////        opMode.telemetry.addLine("Current: " + current);
-////        opMode.telemetry.addLine("Target Enc: " + target);
-////        opMode.telemetry.update();
-//
-//    }
+    public void moveJoint0ToPos(int position) {
+        while(Math.abs(joint0.getCurrentPosition()-position)>5) {
+            PIDLoop(joint0,position);
+        }
+    }
+
+    public int MAX_VELOCITY =3000;
+
+    public void PIDLoop(DcMotorEx motor, double target) {
+        double current = motor.getCurrentPosition();
+
+        int sign=1;
+        if(target<current) {
+            sign=-1;
+        }
+
+        double diff = Math.abs(target-current);
+
+        double velocity = 1;
+
+        if(diff<100) {
+            velocity = diff/100*0.6;
+        } else if(diff<500) {
+            velocity=0.6;
+        }
+
+        if(diff<20) {
+            velocity=0.1;
+        }
+
+
+        //1130 0.15
+        if(velocity>1) {
+            velocity=1;
+        } else if (velocity<-1) {
+            velocity=-1;
+        }
+
+        if(velocity==0) {
+            velocity=0.001;
+        }
+
+        motor.setVelocity(sign*MAX_VELOCITY*velocity);
+//        motor.setPower(sign*velocity);
+
+//        opMode.telemetry.addLine("Actual Velocity: " + motor.getVelocity());
+//        opMode.telemetry.addLine("Velocity: " + velocity);
+//        opMode.telemetry.addLine("Current: " + current);
+//        opMode.telemetry.addLine("Target Enc: " + target);
+//        opMode.telemetry.update();
+
+    }
 //
 //    public void setJoint0(double val) {
 //        j0=val;
@@ -154,6 +173,38 @@ public class Arm {
         fingers.setPower(0.0);
     }
 
+    public final int HIGH_GOAL_ENC = 716;
+    public final int MID_GOAL_ENC = 1111;
+    public final int LOW_GOAL_ENC = 1367;
+
+    public enum GOAL {
+        HIGH,
+        MID,
+        LOW
+    }
+
+    public boolean isArmCloseToEnc(int enc) {
+        return Math.abs(joint0.getCurrentPosition()-enc)<10;
+    }
+
+    //Aims the arm at the high goal
+    public void aimToHigh() {
+        PIDLoop(joint0,HIGH_GOAL_ENC);
+        joint1.setPosition(1.0);
+    }
+
+    //Aims the arm at the mid goal
+    public void aimToMid() {
+        PIDLoop(joint0,MID_GOAL_ENC);
+        joint1.setPosition(0.55);
+    }
+
+    //Aims the arm at the low goal
+    public void aimToLow() {
+        PIDLoop(joint0,LOW_GOAL_ENC);
+        joint1.setPosition(0.0);
+    }
+
     int MAX_JOINT0_VELOCITY = 3000;
     public void setJoint0Speed(double speed) {
         joint0.setVelocity(map(MAX_JOINT0_VELOCITY,speed));
@@ -166,6 +217,23 @@ public class Arm {
 
     private static double map(double targetUp, double value) {
         return targetUp*value;
+    }
+
+    private double position = -1;
+
+    public void stopUsingPosition() {
+        position = -1;
+    }
+
+    public void setArmPosition(int pos) {
+        position = pos;
+    }
+
+    public void aimToPosition() {
+        if(position==-1) { return; }
+
+        PIDLoop(joint0,position);
+
     }
 
 }

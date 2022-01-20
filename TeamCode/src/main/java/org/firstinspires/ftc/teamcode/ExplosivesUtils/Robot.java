@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 public class Robot {
 
     public DcMotorEx left, right, carouselMover, bleft, fleft, fright, bright;
+
+    public TouchSensor touch;
 
     public Arm arm;
 
@@ -37,6 +40,22 @@ public class Robot {
         this.hardwareMap=hardwareMap;
         this.opMode=opMode;
         init();
+    }
+
+    public void initializeArm() {
+        arm.joint0.setVelocity(-500);
+        while(touch.getValue()<1) {
+            //wait
+        }
+        arm.joint0.setVelocity(0);
+
+        arm.joint0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm.joint0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void prepareForAuto() {
+        arm.joint1.setPosition(0.9);
+        initializeArm();
     }
 
     /*
@@ -58,10 +77,17 @@ public class Robot {
         bright = hardwareMap.get(DcMotorEx.class, "bright");
         carouselMover = hardwareMap.get(DcMotorEx.class, "carousel");
 
+        touch = hardwareMap.get(TouchSensor.class,"touch");
+
 //        right.setDirection(DcMotorSimple.Direction.REVERSE);
 
         fright.setDirection(DcMotorSimple.Direction.REVERSE);
         bright.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        fright.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bright.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bleft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fleft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         fright.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bright.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -78,16 +104,18 @@ public class Robot {
      */
     public ArrayList<SensorData> getSensorData() {
         ArrayList<SensorData> list = new ArrayList<>();
-//        list.add(new SensorData("gyro heading", getHeading()));
+        list.add(new SensorData("gyro heading", getHeading()));
+        list.add(new SensorData("touch", touch.getValue()));
 //        list.add(new SensorData("leftside enc", leftEncoder()));
 //        list.add(new SensorData("rightside enc", rightEncoder()));
-//        list.add(new SensorData("arm0 enc", arm.joint0.getCurrentPosition()));
-        list.add(new SensorData("x accel", imu.getAcceleration().xAccel));
-        list.add(new SensorData("y accel", imu.getAcceleration().yAccel));
-        list.add(new SensorData("z accel", imu.getAcceleration().zAccel));
-        list.add(new SensorData("pos", imu.getPosition().toString()));
-        list.add(new SensorData("velocity", imu.getVelocity().toString()));
-        list.add(new SensorData("magnetic", imu.getMagneticFieldStrength().toString()));
+        list.add(new SensorData("arm0 enc", arm.joint0.getCurrentPosition()));
+        list.add(new SensorData("arm1 pos", arm.joint1.getPosition()));
+//        list.add(new SensorData("x accel", imu.getAcceleration().xAccel));
+//        list.add(new SensorData("y accel", imu.getAcceleration().yAccel));
+//        list.add(new SensorData("z accel", imu.getAcceleration().zAccel));
+//        list.add(new SensorData("pos", imu.getPosition().toString()));
+//        list.add(new SensorData("velocity", imu.getVelocity().toString()));
+//        list.add(new SensorData("magnetic", imu.getMagneticFieldStrength().toString()));
         return list;
     }
 
@@ -476,8 +504,7 @@ public class Robot {
         stop();
     }
 
-    /// Positive ticks is right, negative is left
-    public void strafeEncoders(double ticks, double speed) {
+    public void strafeLeftEncoders(double ticks, double speed) {
         long startTime = System.currentTimeMillis();
 
         double initialL = fleft.getCurrentPosition();
@@ -489,6 +516,43 @@ public class Robot {
         boolean keepGoing = true;
 
         while(keepGoing) {
+
+            arm.aimToPosition();
+
+            opMode.telemetry.addLine("L: " + leftEncoder());
+            opMode.telemetry.addLine("R: " + rightEncoder());
+            opMode.telemetry.update();
+
+            double diffL = fleft.getCurrentPosition()-finalL;
+            double diffR = bright.getCurrentPosition()-finalR;
+
+            fright(-speed);
+            bright(speed);
+            fleft(speed);
+            bleft(-speed);
+
+            if(Math.abs(diffL)<10&&Math.abs(diffR)<10 || (System.currentTimeMillis()>startTime+5000)) {
+                keepGoing=false;
+            }
+        }
+
+        stop();
+    }
+
+    public void strafeRightEncoders(double ticks, double speed) {
+        long startTime = System.currentTimeMillis();
+
+        double initialL = fleft.getCurrentPosition();
+        double initialR = bright.getCurrentPosition();
+
+        double finalL = initialL+ticks;
+        double finalR = initialR+ticks;
+
+        boolean keepGoing = true;
+
+        while(keepGoing) {
+
+            arm.aimToPosition();
 
             opMode.telemetry.addLine("L: " + leftEncoder());
             opMode.telemetry.addLine("R: " + rightEncoder());
@@ -526,6 +590,7 @@ public class Robot {
         lastMeasurementTime = System.currentTimeMillis();
 
         while(keepGoing) {
+            arm.aimToPosition();
 
             double diffL = finalL-leftEncoder();
             double diffR = finalR-rightEncoder();
@@ -533,7 +598,7 @@ public class Robot {
             double gyroAdd = 0.0;
 
             if(Math.abs(initialHeading-getHeading())>2.0) {
-                gyroAdd = (initialHeading-getHeading()) / 100;
+                gyroAdd = (initialHeading-getHeading()) / 75;
             }
 
             left(ENC_EQUATION(diffL)*speed - gyroAdd);
@@ -547,6 +612,32 @@ public class Robot {
         }
 
         stop();
+    }
+
+    // Returns whether the loop should continue
+    public boolean driveEncodersLoop(int ticks, int initialL, int initialR, double initialHeading, long startTime, double speed) {
+        double finalL = initialL+ticks;
+        double finalR = initialR+ticks;
+
+        double diffL = finalL-leftEncoder();
+        double diffR = finalR-rightEncoder();
+
+        double gyroAdd = 0.0;
+
+        if(Math.abs(initialHeading-getHeading())>2.0) {
+            gyroAdd = (initialHeading-getHeading()) / 100;
+        }
+
+        left(ENC_EQUATION(diffL)*speed - gyroAdd);
+        right(ENC_EQUATION(diffR)*speed + gyroAdd);
+
+        updatePosition();
+
+        if(Math.abs(diffL)<10&&Math.abs(diffR)<10 || (System.currentTimeMillis()>startTime+5000)) {
+            return false;
+        }
+
+        return true;
     }
 
     //in millimeters
@@ -599,43 +690,84 @@ public class Robot {
     public void driveToPosition(double x, double y, double speed) {
         //find angle to position
         double rad = Math.atan((this.y-y)/(this.x-x));
-
         double heading = getHeading();
+        double radWithHeading = rad-heading;
+        double magnitude = Math.sqrt((x*x)+(y*y));
 
-        opMode.telemetry.addLine("Angle to final: "+rad);
-        opMode.telemetry.addLine("Angle to final: "+rad);
+        opMode.telemetry.addLine("Angle to final (ignoring heading): "+rad);
+        opMode.telemetry.addLine("Angle to final (with heading): "+radWithHeading);
+        opMode.telemetry.addLine("Magnitude: "+magnitude);
+        opMode.telemetry.addLine("RobotX: " + this.x + ", RobotY: " + this.y);
+        opMode.telemetry.addLine("PosX: " + x + ", PosY: " + y);
         opMode.telemetry.update();
 
-        autoturn(rad*(180/Math.PI),2);
+        waitMillis(5000);
 
         long startTime = System.currentTimeMillis();
 
-        double initialL = leftEncoder();
-        double initialR = rightEncoder();
+        double initialBleft = bleft.getCurrentPosition();
+        double initialFleft = fleft.getCurrentPosition();
+        double initialBright = bright.getCurrentPosition();
+        double initialFright = fright.getCurrentPosition();
 
         double initialHeading = getHeading();
 
+        //fright and bleft
+        double firstPower = -Math.sin(radWithHeading-(0.25*Math.PI));
+        //fleft and bright
+        double secondPower = -Math.sin(radWithHeading+(0.25*Math.PI));
+
+        bleft.setVelocity(MAX_DRIVE_MOTOR_VELOCITY*speed*firstPower);
+        bright.setVelocity(MAX_DRIVE_MOTOR_VELOCITY*speed*secondPower);
+        fright.setVelocity(MAX_DRIVE_MOTOR_VELOCITY*speed*firstPower);
+        fleft.setVelocity(MAX_DRIVE_MOTOR_VELOCITY*speed*secondPower);
+
+        waitMillis(1000);
+
+
+        //Calculate position
+
+        int bleftTicks = bleft.getCurrentPosition();
+        int fleftTicks = fleft.getCurrentPosition();
+        int brightTicks = bright.getCurrentPosition();
+        int frightTicks = fright.getCurrentPosition();
+
         boolean keepGoing = true;
-
         while(keepGoing) {
+            int changeInBleft = bleft.getCurrentPosition()-bleftTicks;
+            int changeInFleft = fleft.getCurrentPosition()-fleftTicks;
+            int changeInBright = bright.getCurrentPosition()-brightTicks;
+            int changeInFright = fright.getCurrentPosition()-frightTicks;
 
-            updatePosition();
+            bleftTicks = bleft.getCurrentPosition();
+            fleftTicks = fleft.getCurrentPosition();
+            brightTicks = bright.getCurrentPosition();
+            frightTicks = fright.getCurrentPosition();
 
-            double dist = Coordinate.distanceBetween(new Coordinate(this.x,this.y), new Coordinate(x,y));
+            //If going forward change is positive
 
-            double gyroAdd = 0.0;
+            double encoderDistance = 0.0;
 
-            if(Math.abs(initialHeading-getHeading())>2.0) {
-                gyroAdd = (initialHeading-getHeading()) / 100;
-            }
+            encoderDistance += changeInBleft/Math.sqrt(2);
+            encoderDistance += changeInFleft/Math.sqrt(2);
+            encoderDistance += changeInBright/Math.sqrt(2);
+            encoderDistance += changeInFright/Math.sqrt(2);
 
-            left(speed - gyroAdd);
-            right(speed + gyroAdd);
+            opMode.telemetry.addLine("Change in BLEFT: " + changeInBleft);
+            opMode.telemetry.addLine("Change in FLEFT: " + changeInFleft);
+            opMode.telemetry.addLine("Change in BRIGHT: " + changeInBright);
+            opMode.telemetry.addLine("Change in FRIGHT: " + changeInFright);
+            opMode.telemetry.addLine("Distance: " + encoderDistance);
+            opMode.telemetry.addLine("Distance FUNCTION: " + encoderToDistance(encoderDistance/4));
+            opMode.telemetry.update();
 
-            if(Math.abs(dist)<0.5 || (System.currentTimeMillis()>startTime+10000)) {
+            if(encoderToDistance(encoderDistance/4)<magnitude) {
                 keepGoing=false;
             }
+
         }
+
+        stop();
 
     }
 
@@ -715,6 +847,8 @@ public class Robot {
                 speed = motorPowerFunction(diff);
                 turn(speed);
                 diff = calcdiff(getHeading(), target);
+
+                arm.aimToPosition();
             }
 
             turn(0);
